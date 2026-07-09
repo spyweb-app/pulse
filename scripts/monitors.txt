@@ -1,0 +1,10 @@
+Production API|https://api.example.com
+Staging|https://staging.example.com
+Company Blog|https://blog.example.com
+Documentation|https://docs.example.com
+Landing Page|https://example.com
+Shop|https://shop.example.com
+Status Page|https://status.example.com
+CDN Edge|https://cdn.example.com
+Auth Service|https://auth.example.com
+Admin Panel|https://admin.example.com

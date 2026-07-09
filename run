@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -e
+
+cd "$(dirname "$0")"
+
+# Parse --port argument
+PORT_FLAG=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --port) PORT_FLAG="--port $2"; shift 2 ;;
+    *) echo "Unknown: $1"; exit 1 ;;
+  esac
+done
+
+# Detect package manager
+if command -v bun &>/dev/null; then
+  PKG="bun"
+elif command -v npm &>/dev/null; then
+  PKG="npm"
+else
+  echo "Error: bun or npm is required to build the dashboard"
+  echo "Install bun: https://bun.sh"
+  echo "Install npm: https://nodejs.org"
+  exit 1
+fi
+
+# Install dependencies if missing
+if [ ! -d "dashboard/node_modules" ]; then
+  echo "Installing dependencies with $PKG..."
+  cd dashboard && $PKG install && cd ..
+fi
+
+# Run tests
+echo "Running tests..."
+./spyweb test
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "SpyWeb Test, unable to build and start SpyWeb"
+  exit 1
+fi
+
+# Build dashboard
+echo "Building dashboard with $PKG..."
+cd dashboard && $PKG run build && cd ..
+
+# Start spyweb
+echo "Starting spyweb..."
+./spyweb start $PORT_FLAG

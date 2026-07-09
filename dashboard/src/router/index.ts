@@ -1,0 +1,50 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import { h } from 'vue'
+
+const layouts: Record<string, () => Promise<any>> = {
+  default: () => import('~layouts/Default.vue'),
+}
+
+async function wrapPage(pageModule: any): Promise<any> {
+  const page = pageModule.default
+  const name = page.layout ?? 'default'
+
+  if (name === null || name === 'none') return page
+
+  const loader = layouts[name]
+  if (!loader) {
+    throw new Error(
+      `Layout "${name}" not found. Available: ${Object.keys(layouts).join(', ')}`
+    )
+  }
+
+  const mod = await loader()
+  const layout = mod.default
+  return { render: () => h(layout, null, { default: () => h(page) }) }
+}
+
+const routes = [
+  {
+    path: '/',
+    component: () => import('~pages/Dashboard.vue').then(wrapPage),
+  },
+  {
+    path: '/settings',
+    component: () => import('~pages/Settings.vue').then(wrapPage),
+  },
+  {
+    path: '/notifications',
+    component: () => import('~pages/Notifications.vue').then(wrapPage),
+  },
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+})
+
+router.onError((err) => {
+  console.error('Router error:', err)
+})
+
+export default router

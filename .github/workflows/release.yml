@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+        working-directory: dashboard
+
+      - name: Build dashboard
+        run: npm run build
+        working-directory: dashboard
+
+      - name: Package release
+        run: |
+          mkdir -p pulse/ui
+          git ls-files | grep -v '^\.github/' | grep -v '^\.gitignore$' | grep -v '^ui/' \
+            | while read f; do mkdir -p "pulse/$(dirname "$f")" && cp -a "$f" "pulse/$f"; done
+          cp -r ui/. pulse/ui/
+          tar -czf "pulse-${GITHUB_REF_NAME}.tar.gz" pulse/
+          zip -r "pulse-${GITHUB_REF_NAME}.zip" pulse/
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            pulse-*.tar.gz
+            pulse-*.zip
+          generate_release_notes: true

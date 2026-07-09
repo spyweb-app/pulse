@@ -1,0 +1,187 @@
+import { apiKey, showAuthModal } from '~stores/auth'
+
+const BASE = '/api/v'
+
+async function request<T>(url: string, opts?: RequestInit): Promise<T> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (apiKey.value) headers['X-SpyWeb-Key'] = apiKey.value
+
+  const res = await fetch(BASE + url, {
+    ...opts,
+    headers: { ...headers, ...opts?.headers as Record<string, string> | undefined },
+  })
+
+  if (res.status === 401) {
+    showAuthModal.value = true
+    throw new Error('Unauthorized')
+  }
+
+  const json = await res.json()
+  if (!json.success) throw new Error(json.error || 'Request failed')
+
+  let data = json.data
+
+  if (data !== null && typeof data === 'object' && !Array.isArray(data) && Object.keys(data).length === 0) {
+    data = [] as unknown as T
+  }
+
+  return data as T
+}
+
+export interface PaginatedResult<T> {
+  items: T[]
+  total: number
+  page: number
+  per_page: number
+  total_pages: number
+}
+
+export interface Monitor {
+  id: number
+  name: string
+  url: string
+  method: string
+  interval_sec: number
+  timeout_ms: number
+  check_value: string
+  desktop_notify: number
+  is_up: number
+  last_status_code: number | null
+  last_response_time_ms: number | null
+  last_check_at: number | null
+  consecutive_failures: number
+  enabled: number
+  check_cert: number
+  cert_threshold_days: number
+  cert_last_check: number | null
+  cert_not_after: string | null
+  cert_days_left: number | null
+  created_at: number
+  updated_at: number
+  uptime_24h: number | null
+  uptime_7d: number | null
+  uptime_30d: number | null
+}
+
+export interface Check {
+  id: number
+  monitor_id: number
+  status_code: number
+  response_time_ms: number
+  is_up: number
+  error_message: string | null
+  checked_at: number
+}
+
+export interface DaySummary {
+  period: string
+  total: number
+  up_count: number
+}
+
+export interface Settings {
+  [key: string]: string
+}
+
+export interface NotificationChannel {
+  id: number
+  name: string
+  type: string
+  config: string
+  enabled: number
+  created_at: number
+}
+
+export interface Health {
+  status: string
+  headless: boolean
+}
+
+export const api = {
+  getHealth: () => request<Health>('/health'),
+
+  listMonitors: (opts?: { page?: number; per_page?: number; sort?: string; order?: string; q?: string; enabled?: number }) => {
+    const params = new URLSearchParams()
+    if (opts) {
+      if (opts.page) params.set('page', String(opts.page))
+      if (opts.per_page) params.set('per_page', String(opts.per_page))
+      if (opts.sort) params.set('sort', opts.sort)
+      if (opts.order) params.set('order', opts.order)
+      if (opts.q) params.set('q', opts.q)
+      if (opts.enabled !== undefined) params.set('enabled', String(opts.enabled))
+    }
+    const qs = params.toString()
+    return request<PaginatedResult<Monitor>>('/monitors' + (qs ? '?' + qs : ''))
+  },
+
+  getMonitor: (id: number) => request<Monitor>('/monitors/' + id),
+
+  createMonitor: (data: Partial<Monitor>) =>
+    request<Monitor>('/monitors', { method: 'POST', body: JSON.stringify(data) }),
+
+  updateMonitor: (id: number, data: Partial<Monitor>) =>
+    request<Monitor>('/monitors/' + id, { method: 'PUT', body: JSON.stringify(data) }),
+
+  deleteMonitor: (id: number) =>
+    request<{ deleted: boolean }>('/monitors/' + id, { method: 'DELETE' }),
+
+  getHistory: (id: number, before?: number, limit = 50) => {
+    const params = new URLSearchParams()
+    if (before) params.set('before', String(before))
+    params.set('limit', String(limit))
+    return request<Check[]>('/monitors/' + id + '/history?' + params.toString())
+  },
+
+  getSummary: (id: number, days = 7, group = 'day') =>
+    request<DaySummary[]>('/monitors/' + id + '/summary?days=' + days + '&group=' + group),
+
+  getSettings: () => request<Settings>('/settings'),
+
+  updateSettings: (data: Settings) =>
+    request<Settings>('/settings', { method: 'PUT', body: JSON.stringify(data) }),
+
+  exportMonitors: async (format: 'json' | 'csv') => {
+    const headers: Record<string, string> = {}
+    if (apiKey.value) headers['X-SpyWeb-Key'] = apiKey.value
+    const res = await fetch(BASE + '/monitors_export?format=' + format, { headers })
+    if (!res.ok) {
+      if (res.status === 401) showAuthModal.value = true
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.error || 'Export failed')
+    }
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'pulse-monitors.' + format
+    a.click()
+    URL.revokeObjectURL(url)
+  },
+
+  importMonitors: (body: string, contentType: string) =>
+    request<{ imported: number; skipped: number; failed: number; total: number }>('/monitors_import', {
+      method: 'POST',
+      headers: { 'Content-Type': contentType },
+      body,
+    }),
+
+  listChannels: () => request<NotificationChannel[]>('/channels'),
+
+  createChannel: (data: Partial<NotificationChannel>) =>
+    request<NotificationChannel>('/channels', { method: 'POST', body: JSON.stringify(data) }),
+
+  updateChannel: (id: number, data: Partial<NotificationChannel>) =>
+    request<NotificationChannel>('/channels/' + id, { method: 'PUT', body: JSON.stringify(data) }),
+
+  deleteChannel: (id: number) =>
+    request<{ deleted: boolean }>('/channels/' + id, { method: 'DELETE' }),
+
+  testChannel: (id: number, message?: string) =>
+    request<{ name: string; type: string; response?: any; error?: string; }>('/channels/' + id + '/test', { method: 'PUT', body: JSON.stringify({ message }) }),
+
+  getMonitorChannels: (id: number) =>
+    request<number[]>('/monitors/' + id + '/channels'),
+
+  setMonitorChannels: (id: number, channelIds: number[]) =>
+    request<{ success: boolean }>('/monitors/' + id + '/channels', { method: 'PUT', body: JSON.stringify(channelIds) }),
+}

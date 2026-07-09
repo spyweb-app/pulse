@@ -1,0 +1,37 @@
+[
+  {
+    "name": "My Website",
+    "url": "https://example.com",
+    "method": "HEAD",
+    "interval_sec": 300,
+    "timeout_ms": 10000
+  },
+  {
+    "name": "API Health Check",
+    "url": "https://api.example.com/health",
+    "method": "GET",
+    "interval_sec": 60,
+    "timeout_ms": 5000,
+    "check_value": "ok",
+    "enabled": 1
+  },
+  {
+    "name": "Login Page",
+    "url": "https://example.com/login",
+    "method": "GET",
+    "interval_sec": 600,
+    "timeout_ms": 10000,
+    "check_value": "Sign in",
+    "enabled": 1
+  },
+  {
+    "name": "Cert Monitor",
+    "url": "https://example.com",
+    "method": "HEAD",
+    "interval_sec": 3600,
+    "timeout_ms": 10000,
+    "check_cert": 1,
+    "cert_threshold_days": 14,
+    "enabled": 1
+  }
+]

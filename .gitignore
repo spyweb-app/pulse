@@ -1,0 +1,28 @@
+# Binaries
+spyweb
+spyweb-tray
+*.exe
+
+# Data files
+data
+data-shm
+data-wal
+/test
+
+# Dependencies
+node_modules/
+
+# Build output
+dashboard/dist/
+ui/**
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+.luarc.json
+spyweb-types.lua

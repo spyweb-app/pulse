@@ -1,0 +1,5 @@
+name,url,method,interval_sec,timeout_ms,check_value,enabled,check_cert,cert_threshold_days
+My Website,https://example.com,HEAD,300,10000,,1,0,14
+API Health Check,https://api.example.com/health,GET,60,5000,ok,1,0,14
+Login Page,https://example.com/login,GET,600,10000,Sign in,1,0,14
+Cert Monitor,https://example.com,HEAD,3600,10000,,1,1,14

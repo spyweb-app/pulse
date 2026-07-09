@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "esnext",
+    "lib": ["ES2023", "DOM"],
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "paths": {
+      "~/*": ["./*"],
+      "~com/*": ["./src/components/*"],
+      "~pages/*": ["./src/pages/*"],
+      "~layouts/*": ["./src/layouts/*"],
+      "~stores/*": ["./src/stores/*"],
+      "~composables/*": ["./src/composables/*"],
+      "~lib/*": ["./src/lib/*"]
+    }
+  },
+  "include": ["src"]
+}

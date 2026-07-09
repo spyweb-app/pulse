@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -e
+
+cd "$(dirname "$0")"
+
+cleanup() {
+  kill $SPYWEB_PID $VITE_PID 2>/dev/null
+  wait $SPYWEB_PID $VITE_PID 2>/dev/null
+}
+trap cleanup EXIT INT TERM
+
+echo "Starting SpyWeb on port 8000..."
+./spyweb start --port 8000 &
+SPYWEB_PID=$!
+
+sleep 1
+
+echo "Starting Vite dev server on port 5173..."
+cd dashboard
+if command -v bun &>/dev/null; then
+  bun run dev &
+elif command -v npm &>/dev/null; then
+  npm run dev &
+else
+  echo "Error: bun or npm is required for dev server"
+  exit 1
+fi
+VITE_PID=$!
+
+echo ""
+echo "  Dashboard:  http://localhost:5173"
+echo "  SpyWeb API: http://localhost:8000"
+echo ""
+echo "  Press Ctrl+C to stop both"
+echo ""
+
+wait
