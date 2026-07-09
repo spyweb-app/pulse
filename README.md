@@ -12,6 +12,17 @@
 
 A self-hosted website uptime monitoring dashboard built on <a href="https://github.com/spyweb-app/spyweb" target="_blank" rel="noopener noreferrer">SpyWeb</a>. Monitors your websites and APIs at regular intervals and alerts you when they go down.
 
+<p align="center">
+  <img src="https://pulse.spyweb.app/pulse-monitors.jpeg" alt="Monitors Dashboard" width="49%" />
+  <img src="https://pulse.spyweb.app/pulse-monitor.jpeg" alt="Monitor Detail" width="49%" />
+</p>
+
+## Demo
+
+Try the live demo at **[https://pulse.spyweb.app/](https://pulse.spyweb.app/)**.
+
+**API key:** `im-a-secure-key`
+
 ## Features
 
 | | |
