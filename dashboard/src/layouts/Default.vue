@@ -40,6 +40,25 @@
         {{ notification.message }}
       </div>
     </transition>
+
+    <nav class="mobile-nav">
+      <RouterLink class="mobile-nav-btn" active-class="active" to="/" exact>
+        <span class="i-mdi-monitor-dashboard mobile-nav-icon" />
+        <span>Monitors</span>
+      </RouterLink>
+      <RouterLink class="mobile-nav-btn" active-class="active" to="/notifications">
+        <span class="i-mdi-bell-ring-outline mobile-nav-icon" />
+        <span>Alerts</span>
+      </RouterLink>
+      <RouterLink class="mobile-nav-btn" active-class="active" to="/settings">
+        <span class="i-mdi-cog-outline mobile-nav-icon" />
+        <span>Settings</span>
+      </RouterLink>
+      <button class="mobile-nav-btn" @click="toggleTheme" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
+        <span :class="isDark ? 'i-mdi-weather-sunny' : 'i-mdi-weather-night'" class="mobile-nav-icon" />
+        <span>Theme</span>
+      </button>
+    </nav>
   </div>
 
   <AuthModal v-if="showAuthModal" />

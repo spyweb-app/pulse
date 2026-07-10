@@ -1,5 +1,5 @@
 <template>
-  <span :class="status.badge">
+  <span class="badge" :class="status.badge">
     <span :class="status.dot"></span>
     {{ status.label }}
   </span>

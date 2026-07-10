@@ -127,6 +127,7 @@ import { ref, computed, onMounted } from 'vue'
 import { api, type Check } from '~lib/api'
 import { useMonitorStore } from '~stores/monitors'
 import { showNotification, autoRefresh } from '~stores/app'
+import { showAuthModal } from '~stores/auth'
 import { usePoll } from '~composables/usePoll'
 import StatusBadge from './StatusBadge.vue'
 import UptimeTimeline from './UptimeTimeline.vue'
@@ -221,7 +222,8 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString()
 }
 
-usePoll(() => store.fetchHistory(store.selectedMonitorId!, 100), 30_000, autoRefresh)
+const pollEnabled = computed(() => autoRefresh.value && !showAuthModal.value)
+usePoll(() => store.fetchHistory(store.selectedMonitorId!, 100), 30_000, pollEnabled)
 
 onMounted(async () => {
   await store.fetchHistory(store.selectedMonitorId!, 100)

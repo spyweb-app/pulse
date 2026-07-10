@@ -12,7 +12,7 @@ async function request<T>(url: string, opts?: RequestInit): Promise<T> {
   })
 
   if (res.status === 401) {
-    showAuthModal.value = true
+    if (!showAuthModal.value) showAuthModal.value = true
     throw new Error('Unauthorized')
   }
 

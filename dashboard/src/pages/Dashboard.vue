@@ -153,12 +153,13 @@ import MonitorDetail from '~com/MonitorDetail.vue'
 import MonitorForm from '~com/MonitorForm.vue'
 import { showNotification, autoRefresh } from '~stores/app'
 
-import { keyVersion } from '~stores/auth'
+import { keyVersion, showAuthModal } from '~stores/auth'
 import { usePoll } from '~composables/usePoll'
 
 const store = useMonitorStore()
 
-usePoll(loadMonitors, 30_000, autoRefresh)
+const pollEnabled = computed(() => autoRefresh.value && !showAuthModal.value)
+usePoll(loadMonitors, 30_000, pollEnabled)
 
 const showForm = ref(false)
 const editingMonitor = ref<Monitor | null>(null)

@@ -24,6 +24,8 @@ export const useMonitorStore = defineStore('monitors', () => {
       monitors.value = Array.isArray(result.items) ? result.items : []
       total.value = result.total
       totalPages.value = result.total_pages
+    } catch {
+      //silence error
     } finally {
       loading.value = false
     }

@@ -1,0 +1,91 @@
+@media (min-width: 768px) {
+  .mobile-nav {
+    @apply hidden;
+  }
+}
+
+@media (max-width: 767px) {
+  .app > .sidebar {
+    @apply hidden;
+  }
+
+  .app > .main {
+    @apply ml-0 pb-16;
+  }
+
+  .mobile-nav {
+    @apply flex fixed bottom-0 left-0 right-0 z-50 bg-[var(--surface)] border-t border-[var(--border)] items-center justify-around px-2 py-2;
+  }
+
+  .mobile-nav-btn {
+    @apply flex flex-col items-center gap-0.5 text-[10px] text-[var(--text-muted)] no-underline px-3 py-1 rounded-lg transition-colors duration-150 cursor-pointer border-none bg-transparent;
+
+    &:hover {
+      @apply bg-[var(--hover)];
+    }
+
+    &.active,
+    &.router-link-active {
+      @apply text-[var(--accent)];
+    }
+  }
+
+  .mobile-nav-icon {
+    @apply text-lg;
+  }
+
+  .card-right {
+    .status-text {
+      @apply hidden;
+    }
+
+    .stat ~ .stat {
+      @apply hidden;
+    }
+  }
+
+  .topbar-actions .btn-secondary {
+    @apply hidden;
+  }
+
+  .page-btn:not(.active) {
+    @apply hidden;
+  }
+
+  .history-table th:nth-child(n+3),
+  .history-table td:nth-child(n+3) {
+    @apply hidden;
+  }
+
+  .toolbar {
+    @apply flex-wrap;
+  }
+  .toolbar-right {
+    @apply w-full;
+    .filter-group {
+      @apply ml-auto
+    }
+  }
+  .search-box {
+    @apply max-w-full!
+  }
+}
+
+@media (max-width: 449px) {
+  .toolbar-right {
+    .poll-toggle {
+      @apply hidden;
+    }
+    
+    /* .monitor-count {
+      @apply hidden;
+    } */
+  }
+
+  .card-right > *:not(.card-arrow) {
+    @apply hidden;
+  }
+  .topbar, .toolbar, .content {
+    @apply pl-4! pr-4!
+  }
+}

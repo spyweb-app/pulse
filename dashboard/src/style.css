@@ -76,7 +76,16 @@ body {
   overflow: hidden;
   font-family: inherit;
 }
-
+button {
+  span { 
+    @apply align-bottom
+  }
+}
+h1 {
+  span {
+    @apply align-middle
+  }
+}
 .btn {
   @apply px-4 py-2 rounded-lg font-medium transition-all duration-150 cursor-pointer border-none;
 }

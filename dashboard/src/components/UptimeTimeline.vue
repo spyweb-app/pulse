@@ -33,6 +33,7 @@ import {
 } from 'chart.js'
 import { api, type DaySummary } from '~lib/api'
 import { autoRefresh } from '~stores/app'
+import { showAuthModal } from '~stores/auth'
 import { usePoll } from '~composables/usePoll'
 
 ChartJS.register(BarElement, LinearScale, CategoryScale, Tooltip)
@@ -45,7 +46,8 @@ const days = [1, 14, 30]
 const selectedDays = ref(14)
 const rawData = ref<DaySummary[]>([])
 
-usePoll(() => selectDays(selectedDays.value), 30_000, autoRefresh)
+const pollEnabled = computed(() => autoRefresh.value && !showAuthModal.value)
+usePoll(() => selectDays(selectedDays.value), 30_000, pollEnabled)
 
 onMounted(() => selectDays(selectedDays.value))
 
